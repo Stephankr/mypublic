@@ -1,0 +1,49 @@
+# Beschreibung: Entfernen von möglichen Universal Apps
+# Autor: Stephan Krüger, WISYS (IT-Systemhaus Dresden GmbH)
+#Version: 1.0
+# Anmerkung: Muss auf Zielsystem ausgeführt werden
+# Apps zurücksetzen
+# Get-AppxPackage -AllUsers| Foreach {Add-AppxPackage -DisableDevelopmentMode -Register "$($_.InstallLocation)\AppXManifest.xml"}
+
+# Uninstall 3D Builder
+Get-AppxPackage -allusers *3dbuilder* | Remove-AppxPackage
+
+# Uninstall Calendar and Mail
+Get-AppxPackage -allusers *windowscommunicationsapps* | Remove-AppxPackage
+
+# Uninstall Get Office
+Get-AppxPackage -allusers *officehub* | Remove-AppxPackage
+
+# Uninstall Get Skype
+Get-AppxPackage -allusers *skypeapp* | Remove-AppxPackage
+
+# Uninstall Get Started
+Get-AppxPackage -allusers *getstarted* | Remove-AppxPackage
+
+# Uninstall Microsoft Solitaire Collection
+Get-AppxPackage -allusers *solitairecollection* | Remove-AppxPackage
+
+# Uninstall Money
+Get-AppxPackage -allusers *bingfinance* | Remove-AppxPackage
+
+# Uninstall Movies & TV
+Get-AppxPackage -allusers *zunevideo* | Remove-AppxPackage
+
+# Uninstall News
+Get-AppxPackage -allusers *bingnews* | Remove-AppxPackage
+
+# Uninstall People
+# Get-AppxPackage -allusers *people* | Remove-AppxPackage
+# Kann nicht mehr entfernt werden
+
+# Uninstall Phone Companion
+Get-AppxPackage -allusers *windowsphone* | Remove-AppxPackage
+
+# Uninstall Sports
+Get-AppxPackage -allusers *bingsports* | Remove-AppxPackage
+
+# Uninstall Xbox
+Get-AppxPackage -allusers *xboxapp* | Remove-AppxPackage
+
+# Uninstall OneNote
+Get-AppxPackage -allusers *onenote* | Remove-AppxPackage
