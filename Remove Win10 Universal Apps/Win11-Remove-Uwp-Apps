@@ -1,0 +1,48 @@
+# PowerShell Script zum Entfernen vorinstallierter Universal Apps unter Windows 11
+# Ausführen als Administrator empfohlen!
+
+# Liste der Apps, die NICHT entfernt werden sollen (Schutzliste)
+$Whitelist = @(
+    "Microsoft.DesktopAppInstaller",    # App Installer
+    "Microsoft.StorePurchaseApp",       # Store Purchase App
+    "Microsoft.WindowsStore",           # Microsoft Store
+    "Microsoft.VCLibs",                 # Visual C++ Libraries
+    "Microsoft.MicrosoftEdge",          # Microsoft Edge
+    "Microsoft.WindowsTerminal",        # Windows Terminal
+    "Microsoft.XboxGameCallableUI",     # Xbox Systemkomponente (nicht sichtbar)
+    "Microsoft.Windows.Notepad",        # Windows Notepad
+    "Microsoft.WindowsCalculator",      # Windows Calculator
+    "Microsoft.ScreenSketch",           # Snipping Tool
+    "Microsoft.Paint"                   # Microsoft Paint
+)
+
+# Alle installierten UWP-Apps auflisten
+$Apps = Get-AppxPackage | Where-Object { 
+    $Whitelist -notcontains $_.Name 
+}
+
+# Apps entfernen
+foreach ($App in $Apps) {
+    Write-Host "Entferne: $($App.Name)" -ForegroundColor Yellow
+    try {
+        Remove-AppxPackage -Package $App.PackageFullName -ErrorAction SilentlyContinue
+    } catch {
+        Write-Host "Fehler beim Entfernen von $($App.Name): $_" -ForegroundColor Red
+    }
+}
+
+# Auch für neue User (Provisioned Packages) entfernen
+$ProvisionedApps = Get-AppxProvisionedPackage -Online | Where-Object { 
+    $Whitelist -notcontains $_.DisplayName 
+}
+
+foreach ($ProvApp in $ProvisionedApps) {
+    Write-Host "Entferne Provisioniertes Paket: $($ProvApp.DisplayName)" -ForegroundColor Yellow
+    try {
+        Remove-AppxProvisionedPackage -Online -PackageName $ProvApp.PackageName -ErrorAction SilentlyContinue
+    } catch {
+        Write-Host "Fehler beim Entfernen von $($ProvApp.DisplayName): $_" -ForegroundColor Red
+    }
+}
+
+Write-Host "Bereinigung abgeschlossen!" -ForegroundColor Green
