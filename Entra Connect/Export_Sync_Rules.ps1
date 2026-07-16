@@ -1,35 +1,37 @@
 $ExportPath = "C:\Temp\"
 New-Item -Path $ExportPath -ItemType Directory -Force
 
+
 $RuleScopeReport = foreach ($Rule in Get-ADSyncRule | Sort-Object Direction, Precedence) {
 
-    if ($null -ne $Rule.ScopeFilter -and $null -ne $Rule.ScopeFilter.ScopeConditionGroups) {
+    $GroupNumber = 0
 
-        $GroupIndex = 0
+    foreach ($ScopeGroup in @($Rule.ScopeFilter)) {
 
-        foreach ($Group in $Rule.ScopeFilter.ScopeConditionGroups) {
-            $GroupIndex++
+        $GroupNumber++
 
-            $ConditionIndex = 0
+        $ConditionNumber = 0
 
-            foreach ($Condition in $Group.ScopeConditions) {
-                $ConditionIndex++
+        foreach ($Condition in @($ScopeGroup.ScopeConditions)) {
 
-                [PSCustomObject]@{
-                    RuleName          = $Rule.Name
-                    RuleIdentifier    = $Rule.Identifier
-                    Direction         = $Rule.Direction
-                    Precedence        = $Rule.Precedence
-                    Disabled          = $Rule.Disabled
-                    Connector         = $Rule.Connector
-                    SourceObjectType  = $Rule.SourceObjectType
-                    TargetObjectType  = $Rule.TargetObjectType
-                    ScopeGroup        = $GroupIndex
-                    ConditionNumber   = $ConditionIndex
-                    Attribute         = $Condition.Attribute
-                    Operator          = $Condition.ComparisonOperator
-                    Value             = $Condition.ComparisonValue
-                }
+            $ConditionNumber++
+
+            [PSCustomObject]@{
+                RuleName         = $Rule.Name
+                RuleIdentifier   = $Rule.Identifier
+                Direction        = $Rule.Direction
+                Precedence       = $Rule.Precedence
+                Disabled         = $Rule.Disabled
+                Connector        = $Rule.Connector
+                SourceObjectType = $Rule.SourceObjectType
+                TargetObjectType = $Rule.TargetObjectType
+
+                ScopeGroup       = $GroupNumber
+                ConditionNumber  = $ConditionNumber
+
+                Attribute        = $Condition.Attribute
+                Operator         = $Condition.ComparisonOperator
+                Value            = $Condition.ComparisonValue
             }
         }
     }
@@ -37,3 +39,6 @@ $RuleScopeReport = foreach ($Rule in Get-ADSyncRule | Sort-Object Direction, Pre
 
 $RuleScopeReport |
 Export-Csv "$ExportPath\EntraConnect_SyncRules_ScopeFilters.csv" -NoTypeInformation -Encoding UTF8
+
+$RuleScopeReport |
+Format-Table RuleName, Direction, Precedence, ScopeGroup, Attribute, Operator, Value -AutoSize
