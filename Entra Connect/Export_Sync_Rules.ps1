@@ -1,3 +1,6 @@
+$ExportPath = "C:\Temp\"
+New-Item -Path $ExportPath -ItemType Directory -Force
+
 $RuleScopeReport = foreach ($Rule in Get-ADSyncRule | Sort-Object Direction, Precedence) {
 
     if ($null -ne $Rule.ScopeFilter -and $null -ne $Rule.ScopeFilter.ScopeConditionGroups) {
